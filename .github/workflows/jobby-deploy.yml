@@ -79,3 +79,4 @@ jobs:
           rm -f "/tmp/jobby-release-$sha.tar.gz"
           bash "$release_dir/lab4/deploy-release.sh" "$release_dir"
           REMOTE
+# Run deployment after adding secrets
