@@ -1,0 +1,17 @@
+workspace:
+  id: 8c1f6beb-0a8e-42e5-8bcf-ebf246485fc8
+
+localResources:
+  collections: []
+  specs:
+    - ../homeworks/hw2/openapi.yaml
+    - ../postman/specs/Jobby API/openapi.yaml
+
+# Each entry here maps a local resource to one or more corresponding objects in Postman Cloud
+
+cloudResources:
+  collections:
+    ../postman/collections/Jobby API — сквозной сценарий: ebcc6204-9e0d-4a8c-aee7-87c6bb6793b6
+resourceNameMappings:
+  specs:
+    - ../postman/specs/Jobby API/openapi.yaml: Jobby API

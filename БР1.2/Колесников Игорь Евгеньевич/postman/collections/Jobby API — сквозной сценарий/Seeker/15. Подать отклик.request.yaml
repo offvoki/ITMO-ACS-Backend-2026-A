@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{baseUrl}}/applications"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: '{"vacancyId":"{{vacancy_id}}","resumeId":"{{resume_id}}","coverLetter":"Здравствуйте! Прошу рассмотреть мою кандидатуру."}'
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('HTTP 201', () => pm.response.to.have.status(201));
+      pm.collectionVariables.set('application_id',pm.response.json().id); pm.test('Статус отклика PENDING',()=>pm.expect(pm.response.json().status).to.eql('PENDING'));
+    language: text/javascript
+order: 7000

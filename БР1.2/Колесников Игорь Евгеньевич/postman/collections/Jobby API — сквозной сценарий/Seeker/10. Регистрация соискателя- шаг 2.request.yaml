@@ -1,0 +1,20 @@
+$kind: http-request
+name: "10. Регистрация соискателя: шаг 2"
+url: "{{baseUrl}}/auth/register/seeker"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: '{"firstName":"Иван","lastName":"Петров","cityId":"{{city_id}}"}'
+auth:
+  type: bearer
+  credentials:
+    token: "{{seeker_temp_token}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('HTTP 201', () => pm.response.to.have.status(201));
+      pm.test('Роль соискателя',()=>pm.expect(pm.response.json().user.role).to.eql('SEEKER'));
+    language: text/javascript
+order: 2000

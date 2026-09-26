@@ -1,0 +1,14 @@
+$kind: http-request
+name: 17. Проверить запрет повторного отклика
+url: "{{baseUrl}}/applications"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: '{"vacancyId":"{{vacancy_id}}","resumeId":"{{resume_id}}","coverLetter":"Повторный отклик"}'
+scripts:
+  - type: afterResponse
+    code: pm.test('HTTP 409', () => pm.response.to.have.status(409));
+    language: text/javascript
+order: 9000

@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{baseUrl}}/companies"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: '{"name":"Тестовая IT-компания {{$timestamp}}","description":"Компания для проверки API","website":"https://example.com"}'
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('HTTP 201', () => pm.response.to.have.status(201));
+      pm.collectionVariables.set('company_id', pm.response.json().id);
+    language: text/javascript
+order: 1000

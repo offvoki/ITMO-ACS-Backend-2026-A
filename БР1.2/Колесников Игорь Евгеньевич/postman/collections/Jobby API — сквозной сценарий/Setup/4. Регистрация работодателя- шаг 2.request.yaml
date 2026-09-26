@@ -1,0 +1,20 @@
+$kind: http-request
+name: "4. Регистрация работодателя: шаг 2"
+url: "{{baseUrl}}/auth/register/employer"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: '{"firstName":"Игорь","lastName":"Колесников","position":"HR Manager"}'
+auth:
+  type: bearer
+  credentials:
+    token: "{{employer_temp_token}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('HTTP 201', () => pm.response.to.have.status(201));
+      pm.test('Роль работодателя', () => pm.expect(pm.response.json().user.role).to.eql('EMPLOYER'));
+    language: text/javascript
+order: 4000

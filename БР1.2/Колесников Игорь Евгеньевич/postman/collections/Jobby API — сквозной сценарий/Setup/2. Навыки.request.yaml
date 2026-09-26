@@ -1,0 +1,10 @@
+$kind: http-request
+url: "{{baseUrl}}/dictionaries/skills"
+method: GET
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('HTTP 200', () => pm.response.to.have.status(200));
+      const skill = pm.response.json().find(x => x.name === 'Node.js'); pm.test('Навык Node.js найден', () => pm.expect(skill).to.exist); pm.collectionVariables.set('skill_id', skill.id);
+    language: text/javascript
+order: 2000

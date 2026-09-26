@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{baseUrl}}/vacancies"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: '{"title":"Backend-разработчик","description":"Разработка серверного приложения","conditions":"Удалённая работа","salaryType":"RANGE","salaryMin":150000,"salaryMax":250000,"currency":"RUB","isRemote":true,"isPublished":true,"companyId":"{{company_id}}"}'
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('HTTP 201', () => pm.response.to.have.status(201));
+      pm.collectionVariables.set('vacancy_id', pm.response.json().id);
+    language: text/javascript
+order: 2000

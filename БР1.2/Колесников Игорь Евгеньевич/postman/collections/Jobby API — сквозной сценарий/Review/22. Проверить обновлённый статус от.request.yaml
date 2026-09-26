@@ -1,0 +1,11 @@
+$kind: http-request
+name: 22. Проверить обновлённый статус отклика
+url: "{{baseUrl}}/applications/my"
+method: GET
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('HTTP 200', () => pm.response.to.have.status(200));
+      const a=pm.response.json().find(x=>x.id===pm.collectionVariables.get('application_id')); pm.test('Статус INVITED виден соискателю',()=>pm.expect(a.status).to.eql('INVITED'));
+    language: text/javascript
+order: 5000

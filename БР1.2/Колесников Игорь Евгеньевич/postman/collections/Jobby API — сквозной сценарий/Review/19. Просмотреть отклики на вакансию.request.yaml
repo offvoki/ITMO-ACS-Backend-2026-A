@@ -1,0 +1,10 @@
+$kind: http-request
+url: "{{baseUrl}}/vacancies/{{vacancy_id}}/applications"
+method: GET
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('HTTP 200', () => pm.response.to.have.status(200));
+      pm.test('Отклик найден',()=>pm.expect(pm.response.json().some(a=>a.id===pm.collectionVariables.get('application_id'))).to.eql(true));
+    language: text/javascript
+order: 2000

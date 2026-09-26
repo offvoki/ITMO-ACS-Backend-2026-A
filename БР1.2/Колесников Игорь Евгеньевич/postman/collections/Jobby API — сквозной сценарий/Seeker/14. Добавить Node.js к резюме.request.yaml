@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{baseUrl}}/resumes/{{resume_id}}/skills"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: '{"skillId":"{{skill_id}}","level":"EXPERT"}'
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('HTTP 201', () => pm.response.to.have.status(201));
+      pm.test('Навык Node.js добавлен',()=>pm.expect(pm.response.json().skill.name).to.eql('Node.js'));
+    language: text/javascript
+order: 6000

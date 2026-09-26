@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{baseUrl}}/resumes"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: '{"title":"Backend-разработчик","summary":"Опыт разработки на Node.js"}'
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('HTTP 201', () => pm.response.to.have.status(201));
+      pm.collectionVariables.set('resume_id',pm.response.json().id); pm.test('Начальный стаж равен нулю',()=>pm.expect(pm.response.json().experienceMonths).to.eql(0));
+    language: text/javascript
+order: 3000

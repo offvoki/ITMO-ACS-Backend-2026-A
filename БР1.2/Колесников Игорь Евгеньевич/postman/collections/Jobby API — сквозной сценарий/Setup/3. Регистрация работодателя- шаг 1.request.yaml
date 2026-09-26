@@ -1,0 +1,20 @@
+$kind: http-request
+name: "3. Регистрация работодателя: шаг 1"
+url: "{{baseUrl}}/auth/register/step1"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: '{"email":"{{employer_email}}","password":"StrongPass123!","role":"EMPLOYER"}'
+scripts:
+  - type: beforeRequest
+    code: pm.collectionVariables.set('employer_email', 'employer-' + Date.now() + '@example.com');
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.collectionVariables.set('employer_temp_token', pm.response.json().temporaryToken);
+      pm.test('Временный токен работодателя получен', () => pm.expect(pm.collectionVariables.get('employer_temp_token')).to.be.a('string'));
+      pm.test('HTTP 201', () => pm.response.to.have.status(201));
+    language: text/javascript
+order: 3000

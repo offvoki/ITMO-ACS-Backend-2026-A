@@ -1,0 +1,14 @@
+$kind: collection
+description: "22 запроса: регистрация работодателя и соискателя, вакансия, резюме, отклик и изменение статуса. Установите baseUrl (например, http://localhost:3001/api/v1). Cookie access_token сохраняется Cookie Jar автоматически."
+variables:
+  baseUrl: http://localhost:3001/api/v1
+  city_id: ""
+  skill_id: ""
+  employer_temp_token: ""
+  seeker_temp_token: ""
+  employer_email: ""
+  seeker_email: ""
+  company_id: ""
+  vacancy_id: ""
+  resume_id: ""
+  application_id: ""

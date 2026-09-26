@@ -1,0 +1,27 @@
+services:
+  db-user:
+    volumes:
+      - user_data:/var/lib/postgresql/data
+  db-vacancy:
+    volumes:
+      - vacancy_data:/var/lib/postgresql/data
+  db-resume:
+    volumes:
+      - resume_data:/var/lib/postgresql/data
+  db-app:
+    volumes:
+      - application_data:/var/lib/postgresql/data
+  db-dict:
+    volumes:
+      - dictionary_data:/var/lib/postgresql/data
+  rabbitmq:
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+volumes:
+  user_data:
+  vacancy_data:
+  resume_data:
+  application_data:
+  dictionary_data:
+  rabbitmq_data:
