@@ -1,0 +1,81 @@
+name: Jobby deploy
+
+on:
+  push:
+    branches:
+      - jobby-deploy
+    paths:
+      - 'БР1.2/Колесников Игорь Евгеньевич/labs/lab23/**'
+      - 'БР1.2/Колесников Игорь Евгеньевич/labs/lab4/**'
+      - '.github/workflows/jobby-deploy.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: jobby-deploy
+  cancel-in-progress: false
+
+env:
+  APP_DIR: БР1.2/Колесников Игорь Евгеньевич
+
+jobs:
+  build:
+    if: github.repository == 'offvoki/ITMO-ACS-Backend-2026-A'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate and build the Docker services
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$APP_DIR/labs/lab23"
+          docker compose config --quiet
+          for service in dictionary-service user-service vacancy-service \
+            resume-service application-service notification-service; do
+            docker compose build "$service"
+          done
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure SSH
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.JOBBY_SSH_HOST }}
+          SSH_PRIVATE_KEY: ${{ secrets.JOBBY_SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.JOBBY_SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          test -n "$SSH_HOST" || { echo 'Missing JOBBY_SSH_HOST'; exit 1; }
+          test -n "$SSH_PRIVATE_KEY" || { echo 'Missing JOBBY_SSH_PRIVATE_KEY'; exit 1; }
+          test -n "$SSH_KNOWN_HOSTS" || { echo 'Missing JOBBY_SSH_KNOWN_HOSTS'; exit 1; }
+          install -m 700 -d "$HOME/.ssh"
+          printf '%s\n' "$SSH_PRIVATE_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/id_ed25519" "$HOME/.ssh/known_hosts"
+      - name: Transfer and deploy release
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.JOBBY_SSH_HOST }}
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/jobby-release.tar.gz"
+          tar -C "$APP_DIR/labs" \
+            --exclude='node_modules' --exclude='dist' \
+            --exclude='.env' --exclude='.env.deploy' --exclude='*.pdf' \
+            -czf "$archive" lab23 lab4
+          remote_archive="/tmp/jobby-release-${GITHUB_SHA}.tar.gz"
+          scp -o StrictHostKeyChecking=yes "$archive" "root@${SSH_HOST}:${remote_archive}"
+          ssh -o StrictHostKeyChecking=yes "root@${SSH_HOST}" \
+            'bash -se' -- "$GITHUB_SHA" <<'REMOTE'
+          set -euo pipefail
+          sha="$1"
+          release_dir="/opt/jobby/releases/$sha"
+          mkdir -p "$release_dir"
+          tar -xzf "/tmp/jobby-release-$sha.tar.gz" -C "$release_dir"
+          rm -f "/tmp/jobby-release-$sha.tar.gz"
+          bash "$release_dir/lab4/deploy-release.sh" "$release_dir"
+          REMOTE

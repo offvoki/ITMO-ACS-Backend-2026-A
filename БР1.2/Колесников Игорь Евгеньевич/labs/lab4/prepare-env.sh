@@ -2,7 +2,7 @@
 set -eu
 
 script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-env_file="$script_dir/.env.deploy"
+env_file="${1:-$script_dir/.env.deploy}"
 
 if [ -e "$env_file" ]; then
   echo "Already exists: $env_file"
